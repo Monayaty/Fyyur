@@ -159,39 +159,39 @@ class VenueForm(FlaskForm):
     seeking_description = StringField('seeking_description', validators=[DataRequired()])
 
 
-# class EditVenueForm(FlaskForm):
-#     name = StringField(
-#         'name', validators=[DataRequired()]
-#     )
-#     city = StringField(
-#         'city', validators=[DataRequired()]
-#     )
-#     state = SelectField(
-    #     'state', validators=[DataRequired()],
-    #     choices = states
-    # )
-#     address = StringField(
-#         'address', validators=[DataRequired()]
-#     )
-#     phone = StringField(
-#         'phone', validators=[DataRequired()]
-#     )
-#     image_link = StringField(
-#         'image_link', validators=[DataRequired()]
-# #     )
-#       genres = SelectMultipleField(
-#         'genres', validators=[DataRequired()],
-#         choices = genres
-#     )
-#     facebook_link = StringField(
-#         'facebook_link', validators=[URL()]
-#     )
-#     website = StringField(
-#         'website', validators=[URL()]
-#     )
-#     seeking_talent = BooleanField('seeking_talent', validators=[DataRequired()])
+class EditVenueForm(FlaskForm):
+    name = StringField(
+        'name', validators=[DataRequired()]
+    )
+    city = StringField(
+        'city', validators=[DataRequired()]
+    )
+    state = SelectField(
+        'state', validators=[DataRequired()],
+        choices = states
+    )
+    address = StringField(
+        'address', validators=[DataRequired()]
+    )
+    phone = StringField(
+        'phone', validators=[DataRequired()]
+    )
+    image_link = StringField(
+        'image_link', validators=[DataRequired()]
+    )
+    genres = SelectMultipleField(
+        'genres', validators=[DataRequired()],
+        choices = genres
+    )
+    facebook_link = StringField(
+        'facebook_link', validators=[URL()]
+    )
+    website = StringField(
+        'website', validators=[URL()]
+    )
+    seeking_talent = BooleanField('seeking_talent', validators=[DataRequired()])
 
-#     seeking_description = StringField('seeking_description', validators=[DataRequired()])
+    seeking_description = StringField('seeking_description', validators=[DataRequired()])
 
 class ArtistForm(FlaskForm):
     name = StringField(
@@ -230,39 +230,44 @@ class ArtistForm(FlaskForm):
     )
 
     
-# class EditArtistForm(FlaskForm):
-#     name = StringField(
-#         'name', validators=[DataRequired()]
-#     )
-#     city = StringField(
-#         'city', validators=[DataRequired()]
-#     )
-#     state = SelectField(
-    #     'state', validators=[DataRequired()],
-    #     choices = states
-    # )
-#     phone = StringField(
-#         # TODO implement validation logic for state
-#         'phone', validators=[DataRequired()])
+class EditArtistForm(FlaskForm):
+    name = StringField(
+        'name', validators=[DataRequired()]
+    )
+    city = StringField(
+        'city', validators=[DataRequired()]
+    )
+    state = SelectField(
+        'state', validators=[DataRequired()],
+        choices = states
+    )
+    address = StringField(
+        'address', validators=[DataRequired()]
+    )
+    phone = StringField(
+        # TODO implement validation logic for state
+        'phone', validators=[DataRequired()])
 
-#     image_link = StringField(
-#         'image_link', validators=[DataRequired()])
+    image_link = StringField(
+        'image_link', validators=[DataRequired()])
     
-# #     genres = SelectMultipleField(
-#         'genres', validators=[DataRequired()],
-#         choices = genres
-#     )
-#     facebook_link = StringField(
-#         # TODO implement enum restriction
-#         'facebook_link', validators=[URL()]
-#     )
-#     website = StringField(
-# #         'website', validators=[DataRequired()]
-#  seeking_venue = BooleanField('seeking_venue', validators=[DataRequired()]
-#     )
+    genres = SelectMultipleField(
+        'genres', validators=[DataRequired()],
+        choices = genres
+    )
+    facebook_link = StringField(
+        # TODO implement enum restriction
+        'facebook_link', validators=[URL()]
+    )
+    website = StringField(
+       'website', validators=[DataRequired()]
+    )
 
-#     seeking_description = StringField('seeking_description', validators=[DataRequired()]
-#     )
+    seeking_venue = BooleanField('seeking_venue', validators=[DataRequired()]
+    )
+
+    seeking_description = StringField('seeking_description', validators=[DataRequired()]
+    )
 
 
 

@@ -2,12 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import os
+from app import *
 SECRET_KEY = os.urandom(32)
 # Grabs the folder where the script runs.
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 # Enable debug mode.
-DEBUG = True
+app.config['DEBUG'] = True
 
 # Connect to the database
 
@@ -17,4 +18,7 @@ SQLALCHEMY_DATABASE_URI = 'postgres://postgres:adam@localhost:5432/fyyurdb'
 
 
 # disable Flask-SQLAlchemy from tracking modifications of objects and emit signals
-SQLALCHEMY_TRACK_MODIFICATIONS = False
+# SQLALCHEMY_TRACK_MODIFICATIONS = False
+# Enable it to use flask-whoosh
+SQLALCHEMY_TRACK_MODIFICATIONS = True
+

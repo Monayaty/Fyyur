@@ -19,6 +19,7 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask_migrate import Migrate
 from werkzeug.utils import secure_filename
+# import flask_whooshalchemy as wa
 # from flask_bcrypt import Bcrypt
 # from flask_login import LoginManager
 
