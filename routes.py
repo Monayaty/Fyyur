@@ -180,7 +180,7 @@ def delete_venue(venue_id):
     db.session.rollback()#to undo the changes if error exists
   finally:
     #finally we need to close the session
-        db.session.close()
+    db.session.close()
   return redirect(url_for('index'))
 
 
@@ -208,14 +208,7 @@ def search_artists():
     "count": results.count(),
     "data": results
   }
-  # response={
-  #   "count": 1,
-  #   "data": [{
-  #     "id": 4,
-  #     "name": "Guns N Petals",
-  #     "num_upcoming_shows": 0,
-  #   }]
-  # }
+  
   return render_template('pages/search_artists.html', results=response, search_term=request.form.get('search_term', ''))
 
 @app.route('/artists/<int:artist_id>')
@@ -258,6 +251,8 @@ def show_artist(artist_id):
 
   return render_template('pages/show_artist.html', artist=data)
 
+  
+#  ----------------------------------------------------------------
 #  Update
 #  ----------------------------------------------------------------
 @app.route('/artists/<int:artist_id>/edit', methods=['GET'])
@@ -318,6 +313,33 @@ def edit_artist_submission(artist_id):
   # when finish , return to page
   return redirect(url_for('show_artist', artist_id=artist_id))
 
+
+@app.route('/artists/<artist_id>', methods=['DELETE'])
+def delete_artist(artist_id):
+  Error = False
+  message = ''
+
+  try:
+    artist = request.query.get(artist_id)
+    db.session.delete(artist)
+    db.session.commit()
+    flash('Artist was successfully deleted!')
+
+  except:
+    #incase errors appear set error = True and rollback the changes
+    error = True
+    #if error convert sys.exc_info() to string and print it
+    message = str(sys.exc_info())
+    #print error message in terminal
+    print(str(sys.exc_info()))
+    #flash the error message in the view page
+    flash('An error occurred. Artist could not be deleted. ,  please try again')
+    db.session.rollback()#to undo the changes if error exists
+  finally:
+    #finally we need to close the session
+    db.session.close()
+  return redirect(url_for('index'))
+
 @app.route('/venues/<int:venue_id>/edit', methods=['GET'])
 def edit_venue(venue_id):
   #query the selected venue
@@ -361,6 +383,8 @@ def edit_venue_submission(venue_id):
   # when finish , return to page
   return redirect(url_for('show_venue', venue_id=venue_id))
 
+
+#  ----------------------------------------------------------------
 #  Create Artist
 #  ----------------------------------------------------------------
 
@@ -405,7 +429,7 @@ def create_artist_submission():
   # return to home page when it finishes
   return render_template('pages/home.html')
 
-
+#  ----------------------------------------------------------------
 #  Shows
 #  ----------------------------------------------------------------
 

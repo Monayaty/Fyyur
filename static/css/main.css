@@ -214,5 +214,6 @@ h2.monospace {
 .buttons
 {
   display: inline-block;
+  background-color: orange;
 
 }

@@ -38,9 +38,20 @@
 			<i class="fas fa-moon"></i> Not currently seeking performance venues
 		</p>
 		{% endif %}
+		<div class="buttons">
+
 		<p>
-		<a href="/artists/{{ artist.id }}/edit">Edit</a>
+		<a class ="buttons btn btn-warning btn-xs" data-id="{{ artist.id }}" href="/venues/{{ artist.id }}/edit">Edit</a>
+		<i class="fas fa-edit"></i>
 		</p>
+		<p>
+		<a class ="delete-button buttons btn btn-danger btn-xs" data-id="{{ artist.id }}"  href="/venues/{{ artist.id }}/delete">Delete</a>
+		<i class="fas fa-trash-alt"></i>
+		</p>
+		
+		
+</div>
+
 	</div>
 	<div class="col-sm-6">
 		<img src="{{ artist.image_link }}" alt="Venue Image" />
@@ -74,5 +85,18 @@
 		{% endfor %}
 	</div>
 </section>
+<script>
+const deleteBtns = document.querySelectorAll('.delete-button');
+  for (let i = 0; i < deleteBtns.length; i++) {
+    const btn = deleteBtns[i];
+    btn.onclick = function(e) {
+      return confirm('Are You Sure To Delete ?')
+      const artistId = e.target.dataset['id'];
+      fetch('/artist/' + artistId, {
+        method: 'DELETE'
+      });
+    }
+  }
+</script>
 
 {% endblock %}

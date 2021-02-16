@@ -45,13 +45,16 @@
 		{% endif %}
 	<div class="buttons">
 
-	
-		<input type="submit" value="Edit Venue" class="btn btn-primary btn-lg">
-
-
-		<input type="submit" value="Delete Venue" class="btn btn-primary btn-lg">
-
-
+		<p>
+		<a class ="buttons btn btn-warning btn-xs" data-id="{{ venue.id }}" href="/venues/{{ venue.id }}/edit">Edit</a>
+		<i class="fas fa-edit"></i>
+		</p>
+		<p>
+		<a class ="delete-button buttons btn btn-danger btn-xs" data-id="{{ venue.id }}"  href="/venues/{{ venue.id }}/delete">Delete</a>
+		<i class="fas fa-trash-alt"></i>
+		</p>
+		
+		
 </div>
 	</div>
 	<div class="col-sm-6">
@@ -88,6 +91,18 @@
 		{% endfor %}
 	</div>
 </section>
-
+<script>
+const deleteBtns = document.querySelectorAll('.delete-button');
+  for (let i = 0; i < deleteBtns.length; i++) {
+    const btn = deleteBtns[i];
+    btn.onclick = function(e) {
+      return confirm('Are You Sure To Delete ?')
+      const venueId = e.target.dataset['id'];
+      fetch('/venue/' + venueId, {
+        method: 'DELETE'
+      });
+    }
+  }
+</script>
 {% endblock %}
 
