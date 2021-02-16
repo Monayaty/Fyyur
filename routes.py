@@ -10,6 +10,7 @@ import babel
 from flask import Flask, render_template, request, Response, flash, redirect, url_for , abort , flash
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
 import logging
 from logging import Formatter, FileHandler
 from forms import *
@@ -23,8 +24,13 @@ from app import *
 # Controllers.
 #----------------------------------------------------------------------------#
 
+#setting our home page route
 @app.route('/')
 def index():
+  # venues = Venue.query.order_by(desc(Venue.created_date)).limit(10).all()
+  # artists = Artist.query.order_by(desc(Artist.created_date)).limit(10).all()
+  # return render_template('pages/home.html', venues=venues, artists=artists)
+  #returing our home page
   return render_template('pages/home.html')
 
 
@@ -61,26 +67,41 @@ def venues():
 def search_venues():
   
   # venue_search = Venue.query.whoosh_search(request.args.get('query')).all()
+  #getting the search term from user input
   search_term = request.form.get('search_term', '')
-  results = Venue.query.filter(Venue.name.ilike(f'%{search_term}%'))
-
+  #filter the results by the search term used , using join
+  # results = Venue.query.filter(Venue.name.ilike(f'%{search_term}%'))
+  results = db.session.query(Venue.id, Venue.name, func.count('*').label('num_upcoming_shows')).filter(Venue.name.like(
+        f'%{search_term}%')).join(Show, Show.start_time > datetime.now(), isouter=True).group_by(Venue.id, Venue.name).all()
+  #our results will be as countes results and showing the searched data
   response={
-    "count": results.count(),
-    "data": results
+    "count": results.count(),#count the results
+    "data": results# showing the results
   }
   return render_template('pages/search_venues.html', results=response, search_term=request.form.get('search_term', ''))
 
 @app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
-  #
+  #Query the venue and filter by the venue ud that was given
   venue = Venue.query.filter(Venue.id == venue_id).first_or_404()
-
+  #declaring variable form date time 
   cur_date = datetime.now()
-
-  past_shows = db.session.query(Show, Artist).filter(Show.venue_id == venue_id, Artist.id == Show.artist_id, Show.start_time < cur_date).all()
-
-  upcoming_shows = db.session.query(Show, Artist).filter(Show.venue_id == venue_id, Artist.id == Show.artist_id, Show.start_time > cur_date).all()
-
+  #get the past shows by quering using join
+  #past_shows = db.session.query(Show, Artist).filter(Show.venue_id == venue_id, Artist.id == Show.artist_id, Show.start_time < cur_date).all()
+  past_shows = db.session.query(Artist, Show).join(Show).join(Venue).\
+      filter(
+          Show.venue_id == venue_id,
+          Show.artist_id == Artist.id,
+          Show.start_time < datetime.now()
+  ).all()
+  #upcoming_shows = db.session.query(Show, Artist).filter(Show.venue_id == venue_id, Artist.id == Show.artist_id, Show.start_time > cur_date).all()
+  upcoming_shows = db.session.query(Artist, Show).join(Show).join(Venue).\
+        filter(
+            Show.venue_id == venue_id,
+            Show.artist_id == Artist.id,
+            Show.start_time > datetime.now()
+    ).all()
+  #defining data
   data={
      "id": venue.id,
      "name": venue.name,
@@ -123,13 +144,15 @@ def create_venue_form():
 
 @app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
-
+    #declaring our used form
     form = VenueForm(request.form)
+    #declaring error object as False
     error = False
+    #setting message variable 
     message = ''
-
+    #check if the method coming from from is post
     if request.method == 'POST':
-
+      #try these steps
       try:
         #declare a new object from Venue table
         data = Venue()
@@ -141,6 +164,7 @@ def create_venue_submission():
         db.session.commit()
         # on successful db insert, flash success
         flash('Venue ' + request.form['name'] + ' was successfully listed!')
+      #if there is error
       except:
         #incase errors appear set error = True and rollback the changes
         error = True
@@ -151,6 +175,7 @@ def create_venue_submission():
         #flash the error message in the view page
         flash('An error occurred. Venue ' + request.form['name'] + ' could not be listed.')
         db.session.rollback()#to undo the changes if error exists
+      #finally we need to do this
       finally:
         #finally we need to close the session
         db.session.close()
@@ -159,9 +184,10 @@ def create_venue_submission():
 
 @app.route('/venues/<venue_id>', methods=['DELETE'])
 def delete_venue(venue_id):
+  #setting Error and message variable
   Error = False
   message = ''
-
+  #try to delete the selected venue
   try:
     venue = request.query.get(venue_id)
     db.session.delete(venue)
@@ -202,8 +228,9 @@ def search_artists():
   # search for "band" should return "The Wild Sax Band".
 
   search_term = request.form.get('search_term', '')
-  results = Artist.query.filter(Artist.name.ilike(f'%{search_term}%'))
-
+  #results = Artist.query.filter(Artist.name.ilike(f'%{search_term}%'))
+  search_result = db.session.query(Artist.id, Artist.name, func.count('*').label('num_upcoming_shows')).filter(Artist.name.like(
+        f'%{search_term}%')).join(Show, Show.start_time > datetime.now(), isouter=True).group_by(Artist.id, Artist.name).all()
   response={
     "count": results.count(),
     "data": results
@@ -213,14 +240,27 @@ def search_artists():
 
 @app.route('/artists/<int:artist_id>')
 def show_artist(artist_id):
+  #query the selecred artist
   artist = Artist.query.filter(Artist.id == artist_id).first_or_404()
-
+  #declaring a variable from datetime
   cur_date = datetime.now()
-
-  past_shows = db.session.query(Show, Venue).filter(Show.artist_id == artist_id, Venue.id == Show.venue_id, Show.start_time < cur_date).all()
-
-  upcoming_shows = db.session.query(Show, Venue).filter(Show.artist_id == artist_id, Venue.id == Show.venue_id, Show.start_time > cur_date).all()
-
+  #getting the past shows using join
+  #past_shows = db.session.query(Show, Venue).filter(Show.artist_id == artist_id, Venue.id == Show.venue_id, Show.start_time < cur_date).all()
+  past_shows = db.session.query(Venue, Show).join(Show).join(Artist).\
+        filter(
+            Show.artist_id == artist_id,
+            Show.venue_id == Venue.id,
+            Show.start_time < datetime.now()
+    ).all()
+  #getting the upcouming shows using join
+  #upcoming_shows = db.session.query(Show, Venue).filter(Show.artist_id == artist_id, Venue.id == Show.venue_id, Show.start_time > cur_date).all()
+  upcoming_shows = db.session.query(Venue, Show).join(Show).join(Artist).\
+        filter(
+            Show.artist_id == artist_id,
+            Show.venue_id == Venue.id,
+            Show.start_time > datetime.now()
+    ).all()
+        #define our data
   data={
      "id": artist.id,
      "name": artist.name,
@@ -248,7 +288,7 @@ def show_artist(artist_id):
      "past_shows_count": len(past_shows),
      "upcoming_shows_count": len(upcoming_shows),
    }
-
+   #return show artist page
   return render_template('pages/show_artist.html', artist=data)
 
   
@@ -436,16 +476,18 @@ def create_artist_submission():
 @app.route('/shows')
 def shows():
   #declaring data array
-  data = []
+  #data = []
   # Query all shows order by show start time 
-  shows = Show.query.order_by(db.desc(Show.start_time))
+  #shows = Show.query.order_by(db.desc(Show.start_time))
   #listing shows
-  for show in shows:
+  #for show in shows:
     # declaring new show object
-    new_show = {'show_id':show.id,'artist_id':show.artist_id,'venue_id':show.venue_id,'artist_name':show.artists.name,
-    'venue_name':show.venues.name,'artist_image_link':show.artists.image_link,'start_time':str(show.start_time)}
+  #  new_show = {'show_id':show.id,'artist_id':show.artist_id,'venue_id':show.venue_id,'artist_name':show.artists.name,
+  #  'venue_name':show.venues.name,'artist_image_link':show.artists.image_link,'start_time':str(show.start_time)}
     #append the show to the data array to list it 
-    data.append(new_show)
+  #  data.append(new_show)
+  data = db.session.query(Show.venue_id,Venue.name.label('venue_name'),Show.artist_id,
+        Artist.name.label("artist_name"),Artist.image_link.label("artist_image_link"), func.to_char(Show.start_time, "YYYY-MM-DD hh:mm:ss").label("start_time")).join(Artist).join(Venue).all()
   # when it finishes , return to shows page
   return render_template('pages/shows.html', shows=data)
 

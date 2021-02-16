@@ -20,5 +20,5 @@ SQLALCHEMY_DATABASE_URI = 'postgres://postgres:adam@localhost:5432/fyyurappdb'
 # disable Flask-SQLAlchemy from tracking modifications of objects and emit signals
 # SQLALCHEMY_TRACK_MODIFICATIONS = False
 # Enable it to use flask-whoosh
-SQLALCHEMY_TRACK_MODIFICATIONS = True
+SQLALCHEMY_TRACK_MODIFICATIONS = False
 
