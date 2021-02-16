@@ -198,7 +198,8 @@ pip install SQLAlchemy
 pip install psycopg2
 9- psql -U postgres
 CREATE DATABASE fyyurdb;
-10- flask run
+10- FLASK_ENV=development FLASK_DEBUG=true flask run
+
 
 
 

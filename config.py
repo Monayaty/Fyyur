@@ -14,7 +14,7 @@ app.config['DEBUG'] = True
 
 
 # TODO IMPLEMENT DATABASE URL
-SQLALCHEMY_DATABASE_URI = 'postgres://postgres:adam@localhost:5432/fyyurdb'
+SQLALCHEMY_DATABASE_URI = 'postgres://postgres:adam@localhost:5432/fyyurappdb'
 
 
 # disable Flask-SQLAlchemy from tracking modifications of objects and emit signals
